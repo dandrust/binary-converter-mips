@@ -1,0 +1,27 @@
+# Convert a binary number, represented as a string (e.g. ‘101010’), 
+# to its decimal equivalent using first principles. Given a binary 
+# input string, your program should produce a decimal output.
+
+.data
+ascii_1: .ascii "1"
+
+.text
+
+binary_convert:
+    move $t0 $a0                # Initialize memory read address
+    li   $t1 0                  # Initialize the accumulator buffer
+    la   $t4 ascii_1            # Load address of constant value "1" 
+    lb   $t3 0($t4)             # Load value of "1" for branching comparison to $t3
+
+read_input:
+    lbu  $t2 0($t0)             # Load the next ASCII digit (single byte) into $t2
+    addi $t0 $t0 1              # Increment memory read address by one byte
+    beqz $t2 end                # Exit the loop if null terminator read
+    sll  $t1 $t1 1              # Left shift accumulator to accommodate next digit
+    bne  $t2 $t3 read_input     # Skip adding 1 if character is zero
+    addi $t1 $t1 1              # Add one to accumulator 
+    j    read_input             # Jump to read next character
+    
+end:
+    move $v0 $t1                # Move accumulator to return value register
+    jr   $ra                    # return
